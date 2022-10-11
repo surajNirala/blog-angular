@@ -2,7 +2,7 @@ import { User } from './../helpers/user.interface';
 import { UserService } from './../helpers/user.service';
 import { ToastrService } from 'ngx-toastr';
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { DBOperation } from '../helpers/db-operation';
 import { mustMatch } from '../helpers/must-match.validator';
@@ -27,7 +27,7 @@ export class UsersComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.setFromState()
+    this.setFormState()
     this.getAllUsers()
     // Swal.fire('hi')
     // this._toastr.success('Success','Success Display');
@@ -35,7 +35,7 @@ export class UsersComponent implements OnInit {
   addEmployeeModal() {
 
   }
-  setFromState() {
+  /* setFormState() {
     this.buttonText = 'Submit';
     this.dbops = DBOperation.create;
     this.registerForm = this._formBuilder.group({
@@ -52,6 +52,24 @@ export class UsersComponent implements OnInit {
     {
       validators: mustMatch('password','confirmPassword')
     })
+  } */
+
+  setFormState() {
+    this.buttonText = 'Submit';
+    this.dbops = DBOperation.create;
+    this.registerForm = new FormGroup({
+      id: new FormControl(0),
+      title: new FormControl('', Validators.required),
+      firstName: new FormControl('', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(15)])),
+      lastName: new FormControl('', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(15)])),
+      email: new FormControl('', Validators.compose([Validators.required, Validators.email])),
+      dob: new FormControl('', Validators.compose([Validators.required])),
+      password: new FormControl('', Validators.compose([Validators.required, Validators.minLength(6)])),
+      confirmPassword: new FormControl('', Validators.compose([Validators.required, Validators.minLength(6)])),
+      acceptTerms : new FormControl(false, Validators.requiredTrue),
+    },
+      mustMatch('password','confirmPassword')
+    );
   }
 
   get form(){
@@ -94,7 +112,7 @@ export class UsersComponent implements OnInit {
     this._userService.getUsers().subscribe((res: User[]) => {
       this.users = res;
       // debugger
-      console.log(res);
+      // console.log(res);
     })
   }
 
